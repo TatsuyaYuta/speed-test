@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Real-time Internet Speed Test</title>
+  <script src="/socket.io/socket.io.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    #speed {
+      font-size: 2rem;
+      color: #4CAF50;
+    }
+    button {
+      font-size: 1rem;
+      padding: 10px 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Real-time Internet Speed Test</h1>
+  <button id="start-test">Start Speed Test</button>
+  <p>Speed: <span id="speed">0.00</span> MB/s</p>
+  
+    <script>
+      const socket = io();
+    
+      document.getElementById('start-test').addEventListener('click', () => {
+        document.getElementById('start-test').disabled = true; // ปิดปุ่มหลังจากกด
+        socket.emit('start-speed-test'); 
+    
+        socket.on('test-data', (data) => {
+          const endTime = Date.now();
+          socket.emit('test-completed', endTime);
+        });
+    
+        // รับข้อมูลและแสดงผลแบบเรียลไทม์
+        socket.on('speed-result', (speed) => {
+          document.getElementById('speed').textContent = speed; // อัปเดตความเร็วในหน้าเว็บ
+        });
+      });
+    </script>
+</body>
+</html>
